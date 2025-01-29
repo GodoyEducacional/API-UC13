@@ -28,16 +28,31 @@ app.get("/:sigla", (req, res) => {
   res.status(200).send(carro); // Se encontrado retorna o carro e status 200
 });
 
-app.post("/", (req, res) => {
-  const novoCarro = req.body; // Obtém o novo carro enviado no corpo da requisição
-  const { error } = modeloCarro.validate(novoCarro); // Valida os dados do novo carro.
+// app.post("/", (req, res) => {
+//   const novoCarro = req.body; // Obtém o novo carro enviado no corpo da requisição
+//   const { error } = modeloCarro.validate(novoCarro); // Valida os dados do novo carro.
+//   if (error) {
+//     // Se houver erro de validação, retorna erro 400
+//     res.status(400).send(error);
+//     return;
+//   }
+//   carros2025.push(novoCarro); // adiciona o carro a lista de carros.
+//   res.status(201).send(novoCarro); // Retorna o carro adiciona com status 200
+// });
+
+app.post('/', (req, res) => {
+  const novoCarro = req.body;
+  const carroExiste = carros2025.find(carro => carro.sigla === novoCarro.sigla);
+  if (carroExiste) {
+    return res.status(400).send('Já existe um carro cadastrado com esse sigla');
+  }
+  const { error } = modeloCarro.validate(novoCarro);
   if (error) {
-    // Se houver erro de validação, retorna erro 400
     res.status(400).send(error);
     return;
   }
-  carros2025.push(novoCarro); // adiciona o carro a lista de carros.
-  res.status(200).send(novoCarro); // Retorna o carro adiciona com status 200
+  carros2025.push(novoCarro);
+  res.status(201).send(novoCarro);
 });
 
 app.put("/:sigla", (req, res) => {
@@ -47,7 +62,7 @@ app.put("/:sigla", (req, res) => {
     // Se o carro não for encontrado retorna erro 404
     res.status(404).send("Não existe um carro com a sigla informada");
     return;
-  };
+  }
   // Valida os dados da requisição com o modelo da atualização:
   const { error } = modeloAtualizacaoCarro.validate(req.body);
   if (error) {
@@ -60,6 +75,20 @@ app.put("/:sigla", (req, res) => {
     carroSelecionado[campo] = req.body[campo];
   }
   res.status(200).send(carroSelecionado);
+});
+
+app.delete("/:sigla", (req, res) => {
+  const siglaInformada = req.params.sigla.toUpperCase(); // Obtém a sigla do carro a ser removido
+  const IndiceCarroSelecionado = carros2025.findIndex(
+    (c) => c.sigla === siglaInformada // Busca o indice do carro na lista
+  );
+  if (IndiceCarroSelecionado === -1) {
+    // Se o carro não for encontrado (indice -1), retorna erro 404
+    res.status(404).send("Não existe um carro com a sigla informada!");
+    return;
+  }
+  const carroRemovido = carros2025.splice(IndiceCarroSelecionado, 1); // Remove o carro da lista
+  res.status(200).send(carroRemovido); // Retorna o carro removido com status 200
 });
 
 // define a porta do servidor
