@@ -28,18 +28,6 @@ app.get("/:sigla", (req, res) => {
   res.status(200).send(carro); // Se encontrado retorna o carro e status 200
 });
 
-// app.post("/", (req, res) => {
-//   const novoCarro = req.body; // Obtém o novo carro enviado no corpo da requisição
-//   const { error } = modeloCarro.validate(novoCarro); // Valida os dados do novo carro.
-//   if (error) {
-//     // Se houver erro de validação, retorna erro 400
-//     res.status(400).send(error);
-//     return;
-//   }
-//   carros2025.push(novoCarro); // adiciona o carro a lista de carros.
-//   res.status(201).send(novoCarro); // Retorna o carro adiciona com status 200
-// });
-
 app.post('/', (req, res) => {
   const novoCarro = req.body;
   const carroExiste = carros2025.find(carro => carro.sigla === novoCarro.sigla);
